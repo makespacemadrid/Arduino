@@ -62,7 +62,7 @@ void setup() {
   headServo.attach(3);
   pinMode(rightEyeLedPin, OUTPUT);
   pinMode(leftEyeLedPin, OUTPUT);
-  //pinMode(headServoPin, OUTPUT);
+  pinMode(headServoPin, OUTPUT);
   // initialize serial:
  
   
@@ -88,6 +88,9 @@ void miFuncionDeArranque() {
 }
 
 void loop() {
+
+leds();
+gira();
 
   //we use the millis to see when the last check occured, and when needed, perform another check
     unsigned long currentMillis = millis(); // grab current time
@@ -219,8 +222,7 @@ void gira(){
   digitalWrite(rightEyeLedPin, HIGH);
     digitalWrite(leftEyeLedPin, HIGH);
     headServo.write(180);
-  headServo.write(0);
-    delay(5000);
+     delay(5000);
    digitalWrite(rightEyeLedPin, LOW);
     digitalWrite(leftEyeLedPin, LOW);
     headServo.write(0);
