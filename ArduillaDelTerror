@@ -34,7 +34,7 @@ Servo headServo;
 
 int lightSensorPin = A0;
 
-//int headServoPin = 3; 
+int headServoPin = 3; 
 
 //led pins a confirmar
 int PinLedRoja = 2 ;//(idealmente en PWM para poder jugar con la intensidad)
@@ -93,7 +93,7 @@ void loop() {
     unsigned long currentMillis = millis(); // grab current time
 if ((unsigned long)(currentMillis - previousMillis) >= interval) {
   
-    ultrasonic();
+    //ultrasonic();
   lightsensor();
     // irdetection(); // commented because make it simple
     
