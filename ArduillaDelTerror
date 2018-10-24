@@ -2,12 +2,19 @@
   codigo de la marmota de halloween
   aka scary chipmunk made in MAKESPACE Madrid
   codigo abierto a todas suggestiones
+  // Scary "Pockets" Chipmunk!
 */
 /*
   DIGITAL SENSORS
-  2 led
 
 
+// Circuito 
+// Pin D3 - Servo
+// 2 leds 
+// Pin D2 - Ojo derecho
+// Pin D6 - Ojo izquierdo
+
+// Pin A0 - Light Sensor 
   sound ?
 
   Ultrasonic HC-SR04
@@ -18,9 +25,22 @@
 
 */
 
+
+
+
+#include <Servo.h>
+
+Servo headServo;
+
+int lightSensorPin = A0;
+
+//int headServoPin = 3; 
+
 //led pins a confirmar
-int PinLedRoja = 6 ;//(idealmente en PWM para poder jugar con la intensidad)
-int PinLedNaranja = 7 ;//(idealmente en PWM para poder jugar con la intensidad)
+int PinLedRoja = 2 ;//(idealmente en PWM para poder jugar con la intensidad)
+int PinLedNaranja = 6 ;//(idealmente en PWM para poder jugar con la intensidad)
+int rightEyeLedPin = 2;
+int leftEyeLedPin = 6;
 
 int LedRojaVal;
 int LedNaranjaVal;
@@ -39,13 +59,21 @@ unsigned long previousMillis = 0;         // millis() returns an unsigned long.
 
 void setup() {
   // put your setup code here, to run once:
+  headServo.attach(3);
+  pinMode(rightEyeLedPin, OUTPUT);
+  pinMode(leftEyeLedPin, OUTPUT);
+  //pinMode(headServoPin, OUTPUT);
+  // initialize serial:
+ 
+  
   pinMode(PinLedRoja, OUTPUT);
   pinMode(PinLedNaranja, OUTPUT);
   pinMode(PinTrigger, OUTPUT);
   pinMode(PinEcho, INPUT);
   LedRojaVal = 255;
   LedNaranjaVal = 255;
-  update();
+  update(); 
+  Serial.begin(9600);
 }
 // pita 3 veces
 void miFuncionDeArranque() {
@@ -66,6 +94,7 @@ void loop() {
 if ((unsigned long)(currentMillis - previousMillis) >= interval) {
   
     ultrasonic();
+  lightsensor();
     // irdetection(); // commented because make it simple
     
   // save the "current" time
@@ -104,8 +133,8 @@ else {
 /* Send the distance to the computer using Serial protocol, and
 turn LED OFF to indicate successful reading. */
 Serial.println(distance);
-//gira();
-leds();
+gira();
+//leds();
 //sonido
 
 }
@@ -136,11 +165,6 @@ delay(50);
 //   else blink();
 */
 
-/*
-void gira(){
-  
-}
-*/
 
 void leds(){
   color_morph(&LedRojaVal,   1); 
@@ -168,6 +192,42 @@ void color_morph(int* value, int get_brighter)
     delay(10);
   }
 }
+
+
+void lightsensor() {
+  // put your main code here, to run repeatedly:
+  int lightValue = analogRead(lightSensorPin);
+
+  //Medida inicial del sensor de luz
+  Serial.println(lightValue);
+  delay(50);
+
+  if(lightValue > 350) {
+    digitalWrite(rightEyeLedPin, HIGH);
+    digitalWrite(leftEyeLedPin, HIGH);
+    headServo.write(180);
+    delay(5000); 
+  } else {
+    digitalWrite(rightEyeLedPin, LOW);
+    digitalWrite(leftEyeLedPin, LOW);
+    headServo.write(0);
+    delay(5000);
+  }  
+}
+
+void gira(){
+  digitalWrite(rightEyeLedPin, HIGH);
+    digitalWrite(leftEyeLedPin, HIGH);
+    headServo.write(180);
+  headServo.write(0);
+    delay(5000);
+   digitalWrite(rightEyeLedPin, LOW);
+    digitalWrite(leftEyeLedPin, LOW);
+    headServo.write(0);
+    delay(5000);
+}
+
+
 
 /* 
 void sonido(){
