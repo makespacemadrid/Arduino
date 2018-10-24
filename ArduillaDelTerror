@@ -1,0 +1,176 @@
+/*
+  codigo de la marmota de halloween
+  aka scary chipmunk made in MAKESPACE Madrid
+  codigo abierto a todas suggestiones
+*/
+/*
+  DIGITAL SENSORS
+  2 led
+
+
+  sound ?
+
+  Ultrasonic HC-SR04
+
+  ANALOG
+
+  photocell
+
+*/
+
+//led pins a confirmar
+int PinLedRoja = 6 ;//(idealmente en PWM para poder jugar con la intensidad)
+int PinLedNaranja = 7 ;//(idealmente en PWM para poder jugar con la intensidad)
+
+int LedRojaVal;
+int LedNaranjaVal;
+
+int PinPiezzo = 8 ;
+
+
+//ultrasonido a confirmar
+int PinTrigger = 2 ;
+int PinEcho = 3 ;
+
+//MILLIS
+unsigned long interval = 1000;            // the time we need to wait
+unsigned long previousMillis = 0;         // millis() returns an unsigned long.
+
+
+void setup() {
+  // put your setup code here, to run once:
+  pinMode(PinLedRoja, OUTPUT);
+  pinMode(PinLedNaranja, OUTPUT);
+  pinMode(PinTrigger, OUTPUT);
+  pinMode(PinEcho, INPUT);
+  LedRojaVal = 255;
+  LedNaranjaVal = 255;
+  update();
+}
+// pita 3 veces
+void miFuncionDeArranque() {
+  unsigned char i;
+  for (i = 0; i < 3; i++); // output a frequency sound
+  {
+    digitalWrite(PinPiezzo, HIGH); //Turn off led
+    delay(200);
+    digitalWrite(PinPiezzo, LOW); //Turn on led
+    delay(200);
+  }
+}
+
+void loop() {
+
+  //we use the millis to see when the last check occured, and when needed, perform another check
+    unsigned long currentMillis = millis(); // grab current time
+if ((unsigned long)(currentMillis - previousMillis) >= interval) {
+  
+    ultrasonic();
+    // irdetection(); // commented because make it simple
+    
+  // save the "current" time
+  previousMillis = millis();
+}
+ delay(2); 
+  
+
+}
+
+
+
+void ultrasonic() {
+/* The following UltraTrigPin/UltraEchoPin cycle is used to determine the
+distance of the nearest object by bouncing soundwaves off of it. */ 
+int maximumRange = 200; // Maximum range needed
+int minimumRange = 0; // Minimum range needed
+long duration, distance; // Duration used to calculate distance
+Serial.begin(9600);
+
+digitalWrite(PinTrigger, LOW);
+delayMicroseconds(2);
+digitalWrite(PinTrigger, HIGH);
+delayMicroseconds(10);
+digitalWrite(PinTrigger, LOW);
+duration = pulseIn(PinEcho, HIGH);
+//Calculate the distance (in cm) based on the speed of sound.
+distance = duration/58.2; 
+if (distance >= maximumRange || distance <= minimumRange){
+/* Send a negative number to computer and Turn LED ON
+to indicate "out of range" */
+Serial.println("-1");
+
+}
+else {
+/* Send the distance to the computer using Serial protocol, and
+turn LED OFF to indicate successful reading. */
+Serial.println(distance);
+//gira();
+leds();
+//sonido
+
+}
+//Delay 50ms before next reading.
+delay(50);
+}
+
+/*
+// void ultrasonic2(){
+//   long duration, inches, cm;
+//   // long microsecondsToInches(long microseconds) {
+//   // return microseconds / 74 / 2;
+//   // }
+// 
+//   pinMode(pingPin, OUTPUT);
+//   digitalWrite(pingPin, LOW);
+//   delayMicroseconds(2);
+//   digitalWrite(pingPin, HIGH);
+//   delayMicroseconds(10);
+//   digitalWrite(pingPin, LOW);
+//   pinMode(echoPin, INPUT);
+//   duration = pulseIn(echoPin, HIGH);
+//   // inches = microsecondsToInches(duration);
+//   cm = microsecondsToCentimeters(duration);
+//   if (cm < 10) {
+//     makesound();
+//   }
+//   else blink();
+*/
+
+/*
+void gira(){
+  
+}
+*/
+
+void leds(){
+  color_morph(&LedRojaVal,   1); 
+  color_morph(&LedNaranjaVal, 1);
+  color_morph(&LedRojaVal,   0); 
+  color_morph(&LedNaranjaVal,  0); 
+}
+
+void update()
+{
+  analogWrite(PinLedRoja, LedRojaVal);
+  analogWrite(PinLedNaranja, LedNaranjaVal);
+}
+
+void color_morph(int* value, int get_brighter)
+{
+  for (int i = 0; i < 255; i++)
+  {
+    if (get_brighter)
+      (*value)--;
+    else
+      (*value)++;
+      
+    update();
+    delay(10);
+  }
+}
+
+/* 
+void sonido(){
+  
+}
+*/
