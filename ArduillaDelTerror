@@ -49,8 +49,8 @@ int PinPiezzo = 8 ;
 
 
 //ultrasonido a confirmar
-int PinTrigger = 2 ;
-int PinEcho = 3 ;
+int PinTrigger = 4 ;
+int PinEcho = 5 ;
 
 //MILLIS
 unsigned long interval = 1000;            // the time we need to wait
