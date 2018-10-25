@@ -2,7 +2,8 @@
   codigo de la marmota de halloween
   aka scary chipmunk made in MAKESPACE Madrid
   codigo abierto a todas suggestiones
-  // Scary "Pockets" Chipmunk!
+  // Scary "Pockets" Chipmunk! 
+  https://www.youtube.com/watch?v=o8O-KMlKwtE
 */
 /*
   CIRCUIT
@@ -92,7 +93,7 @@ void loop() {
     unsigned long currentMillis = millis(); // grab current time
 if ((unsigned long)(currentMillis - previousMillis) >= interval) {
       ultrasonic();
-	lightsensor();
+  lightsensor();
   // save the "current" time
   previousMillis = millis();
 }
@@ -198,7 +199,7 @@ void lightsensor() {
   if(lightValue > 350) {
     //digitalWrite(rightEyeLedPin, HIGH);
     //digitalWrite(leftEyeLedPin, HIGH);
-	leds();	
+  leds(); 
     headServo.write(180);
     delay(5000); 
   } else {
