@@ -2,46 +2,49 @@
   codigo de la marmota de halloween
   aka scary chipmunk made in MAKESPACE Madrid
   codigo abierto a todas suggestiones
-  // Scary "Pockets" Chipmunk! 
+  // Scary "Pockets" Chipmunk!
   https://www.youtube.com/watch?v=o8O-KMlKwtE
 */
 /*
   CIRCUIT
-// 2 leds 
-// Pin D2 - Ojo derecho
-// Pin D3 - Servo
-// Pin D6 - Ojo izquierdo
+  // 2 leds
+  // Pin D2 - Ojo derecho
+  // Pin D3 - Servo
+  // Pin D6 - Ojo izquierdo
 
-//  Ultrasonic HC-SR04
-//  Pin A0 - photocell 
+  //  Ultrasonic HC-SR04
+  //  Pin A0 - photocell
 
 */
 /* PSEUDO CODE
-at startup beeps 3 times, and turns head in default 0 position
+  at startup beeps 3 times, and turns head in default 0 position
 
-if senses a change in light (turn on the light) or detects item with ultrasonic , 
-the scary chipmunk lights up its eyes and turns its head
-will make a noise eventually
+  if senses a change in light (turn on the light) or detects item with ultrasonic ,
+  the scary chipmunk lights up its eyes and turns its head
+  will make a noise eventually
 
-// need to add a counter to avoid it working all the time 
-if it does it 3 times in a row, wait 30 seconds
+  // need to add a counter to avoid it working all the time
+  if it does it 3 times in a row, wait 30 seconds
 
-reset head 
+  reset head
 
 */
 
 
 //////DECLARE PINS , VARIABLES , CONSTANTS
 #include <Servo.h>
-Servo headServo;
+
 
 //ANALOG ACCESORIES
-int lightSensorPin = A0;
-int headServoPin = 3; 
+int PhotoCellPin = A0;
+
+int headServoPin = 6; //66
+Servo headServo;
+
 
 //DIGITAL ACCESORIES
 int rightEyeLedPin = 2;
-int leftEyeLedPin = 6;
+int leftEyeLedPin = 3; //13 ?
 int LedRojaVal;
 int LedNaranjaVal;
 
@@ -52,21 +55,21 @@ int PinTrigger = 4 ;
 int PinEcho = 5 ;
 
 //MILLIS
-unsigned long interval = 10000;            // the time we need to wait
+unsigned long interval = 13666;            // the time we need to wait
 unsigned long previousMillis = 0;         // millis() returns an unsigned long.
 
 
 void setup() {
   // put your setup code here, to run once:
   headServo.attach(3);
-  
+
   pinMode(rightEyeLedPin, OUTPUT);
   pinMode(leftEyeLedPin, OUTPUT);
   LedRojaVal = 255;
   LedNaranjaVal = 255;
-  update(); 
-  
-  pinMode(headServoPin, OUTPUT);  
+  update();
+
+  pinMode(headServoPin, OUTPUT);
   pinMode(PinTrigger, OUTPUT);
   pinMode(PinEcho, INPUT);
 
@@ -83,88 +86,88 @@ void miFuncionDeArranque() {
     delay(600);
     digitalWrite(PinPiezzo, LOW); //Turn on led
     delay(300);
-}
+  }
   // turns the head to 0 position
   headServo.write(0);
 }
 
 void loop() {
   //we use the millis to see when the last check occured, and when needed, perform another check
-    unsigned long currentMillis = millis(); // grab current time
-if ((unsigned long)(currentMillis - previousMillis) >= interval) {
-      ultrasonic();
-  lightsensor();
-  // save the "current" time
-  previousMillis = millis();
-}
- delay(2); 
+  unsigned long currentMillis = millis(); // grab current time
+  if ((unsigned long)(currentMillis - previousMillis) >= interval) {
+    //   ultrasonic();
+    PhotoCell();
+    // save the "current" time
+    previousMillis = millis();
+  }
+  delay(2);
 }
 
 
 void ultrasonic() {
-/* The following UltraTrigPin/UltraEchoPin cycle is used to determine the
-distance of the nearest object by bouncing soundwaves off of it. */ 
-int maximumRange = 200; // Maximum range needed
-int minimumRange = 0; // Minimum range needed
-long duration, distance; // Duration used to calculate distance
-Serial.begin(9600);
+  /* The following UltraTrigPin/UltraEchoPin cycle is used to determine the
+    distance of the nearest object by bouncing soundwaves off of it. */
+  int maximumRange = 200; // Maximum range needed
+  int minimumRange = 0; // Minimum range needed
+  long duration, distance; // Duration used to calculate distance
+  Serial.begin(9600);
 
-digitalWrite(PinTrigger, LOW);
-delayMicroseconds(2);
-digitalWrite(PinTrigger, HIGH);
-delayMicroseconds(10);
-digitalWrite(PinTrigger, LOW);
-duration = pulseIn(PinEcho, HIGH);
-//Calculate the distance (in cm) based on the speed of sound.
-distance = duration/58.2; 
-if (distance >= maximumRange || distance <= minimumRange){
-/* Send a negative number to computer and Turn LED ON
-to indicate "out of range" */
-Serial.println("-1");
+  digitalWrite(PinTrigger, LOW);
+  delayMicroseconds(2);
+  digitalWrite(PinTrigger, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(PinTrigger, LOW);
+  duration = pulseIn(PinEcho, HIGH);
+  //Calculate the distance (in cm) based on the speed of sound.
+  distance = duration / 58.2;
+  if (distance >= maximumRange || distance <= minimumRange) {
+    /* Send a negative number to computer and Turn LED ON
+      to indicate "out of range" */
+    Serial.println("-1");
 
-}
-else {
-/* Send the distance to the computer using Serial protocol, and
-turn LED OFF to indicate successful reading. */
-Serial.println(distance);
-gira();
-//leds();
-//sonido
+  }
+  else {
+    /* Send the distance to the computer using Serial protocol, and
+      turn LED OFF to indicate successful reading. */
+    Serial.println(distance);
+    TurnHead();
+    //leds();
+    //sonido
 
-}
-//Delay 50ms before next reading.
-delay(50);
+  }
+  //Delay 50ms before next reading.
+  delay(50);
 }
 
 /*
-// void ultrasonic2(){
-//   long duration, inches, cm;
-//   // long microsecondsToInches(long microseconds) {
-//   // return microseconds / 74 / 2;
-//   // }
-// 
-//   pinMode(pingPin, OUTPUT);
-//   digitalWrite(pingPin, LOW);
-//   delayMicroseconds(2);
-//   digitalWrite(pingPin, HIGH);
-//   delayMicroseconds(10);
-//   digitalWrite(pingPin, LOW);
-//   pinMode(echoPin, INPUT);
-//   duration = pulseIn(echoPin, HIGH);
-//   // inches = microsecondsToInches(duration);
-//   cm = microsecondsToCentimeters(duration);
-//   if (cm < 10) {
-//     makesound();
-//   }
-//   else blink();
+  // void ultrasonic2(){
+  //   long duration, inches, cm;
+  //   // long microsecondsToInches(long microseconds) {
+  //   // return microseconds / 74 / 2;
+  //   // }
+  //
+  //   pinMode(pingPin, OUTPUT);
+  //   digitalWrite(pingPin, LOW);
+  //   delayMicroseconds(2);
+  //   digitalWrite(pingPin, HIGH);
+  //   delayMicroseconds(10);
+  //   digitalWrite(pingPin, LOW);
+  //   pinMode(echoPin, INPUT);
+  //   duration = pulseIn(echoPin, HIGH);
+  //   // inches = microsecondsToInches(duration);
+  //   cm = microsecondsToCentimeters(duration);
+  //   if (cm < 10) {
+  //     makesound();
+  //   }
+  //   else blink();
 */
 
 
-void leds(){
-  color_morph(&LedRojaVal,   1); 
+void leds() {
+  color_morph(&LedRojaVal,   1);
   color_morph(&LedNaranjaVal, 1);
-  color_morph(&LedRojaVal,   0); 
-  color_morph(&LedNaranjaVal,  0); 
+  color_morph(&LedRojaVal,   0);
+  color_morph(&LedNaranjaVal,  0);
 }
 
 void update()
@@ -181,50 +184,63 @@ void color_morph(int* value, int get_brighter)
       (*value)--;
     else
       (*value)++;
-      
+
     update();
     delay(10);
   }
 }
 
 
-void lightsensor() {
+void PhotoCell() {
   // put your main code here, to run repeatedly:
-  int lightValue = analogRead(lightSensorPin);
+  int lightValue = analogRead(PhotoCellPin);
 
   //Medida inicial del sensor de luz
   Serial.println(lightValue);
   delay(50);
 
-  if(lightValue > 350) {
+  if (lightValue > 350) {
     //digitalWrite(rightEyeLedPin, HIGH);
     //digitalWrite(leftEyeLedPin, HIGH);
-  leds(); 
-    headServo.write(180);
-    delay(5000); 
+    leds();
+    TurnHead();
   } else {
     digitalWrite(rightEyeLedPin, LOW);
     digitalWrite(leftEyeLedPin, LOW);
     headServo.write(0);
     delay(5000);
-  }  
+  }
 }
 
-void gira(){
+void TurnHead() {
+  //turn head to provoke surprise and fear with gloomy led eyes
   digitalWrite(rightEyeLedPin, HIGH);
-    digitalWrite(leftEyeLedPin, HIGH);
-    headServo.write(180);
-     delay(5000);
-   digitalWrite(rightEyeLedPin, LOW);
-    digitalWrite(leftEyeLedPin, LOW);
-    headServo.write(0);
-    delay(5000);
+  digitalWrite(leftEyeLedPin, HIGH);
+  headServo.write(180);
+  delay(5000);
+  //turn head back to 0 and turn of leds
+  digitalWrite(rightEyeLedPin, LOW);
+  digitalWrite(leftEyeLedPin, LOW);
+  headServo.write(0);
+  delay(5000);
 }
 
-
-
-/* 
-void sonido(){
-  
+void beep() {
+  unsigned char i;
+  // beeps 3 times , and turns the head to 0 position
+  for (i = 0; i < 3; i++); // output a frequency sound
+  {
+    digitalWrite(PinPiezzo, HIGH); //Turn off led
+    delay(600);
+    digitalWrite(PinPiezzo, LOW); //Turn on led
+    delay(300);
+  }
+  // turns the head to 0 position
+  headServo.write(0);
 }
+
+/*
+  void sonido(){
+
+  }
 */
