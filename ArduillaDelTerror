@@ -38,13 +38,13 @@
 //ANALOG ACCESORIES
 int PhotoCellPin = A0;
 
-int headServoPin = 6; //66
+int headServoPin = 3; 
 Servo headServo;
 
 
 //DIGITAL ACCESORIES
 int rightEyeLedPin = 2;
-int leftEyeLedPin = 3; //13 ?
+int leftEyeLedPin = 6; 
 int LedRojaVal;
 int LedNaranjaVal;
 
@@ -67,9 +67,9 @@ void setup() {
   pinMode(leftEyeLedPin, OUTPUT);
   LedRojaVal = 255;
   LedNaranjaVal = 255;
-  update();
+  //update();
 
-  pinMode(headServoPin, OUTPUT);
+  //pinMode(headServoPin, OUTPUT);
   pinMode(PinTrigger, OUTPUT);
   pinMode(PinEcho, INPUT);
 
@@ -77,30 +77,31 @@ void setup() {
 }
 
 // beeps 3 times , and turns the head to 0 position
-void miFuncionDeArranque() {
+void StartUpSignal() {
   unsigned char i;
-  // beeps 3 times , and turns the head to 0 position
+  // beeps 3 times 
   for (i = 0; i < 3; i++); // output a frequency sound
   {
-    digitalWrite(PinPiezzo, HIGH); //Turn off led
-    delay(600);
-    digitalWrite(PinPiezzo, LOW); //Turn on led
-    delay(300);
+    digitalWrite(PinPiezzo, HIGH); //Turn on piezzo
+    delay(666);
+    digitalWrite(PinPiezzo, LOW); //Turn off piezzo
+    delay(13);
   }
-  // turns the head to 0 position
+  // turns the head to 0 position 
+  //using function from the imported library
   headServo.write(0);
 }
 
 void loop() {
   //we use the millis to see when the last check occured, and when needed, perform another check
   unsigned long currentMillis = millis(); // grab current time
-  if ((unsigned long)(currentMillis - previousMillis) >= interval) {
+  while ((unsigned long)(currentMillis - previousMillis) >= interval) {
     //   ultrasonic();
     PhotoCell();
     // save the "current" time
     previousMillis = millis();
   }
-  delay(2);
+  delay(13);
 }
 
 
@@ -195,14 +196,14 @@ void PhotoCell() {
   // put your main code here, to run repeatedly:
   int lightValue = analogRead(PhotoCellPin);
 
-  //Medida inicial del sensor de luz
-  Serial.println(lightValue);
-  delay(50);
+  //for debug or if you want to test your currentMedida inicial del sensor de luz
+  //Serial.println(lightValue);
+  //delay(50);
 
   if (lightValue > 350) {
     //digitalWrite(rightEyeLedPin, HIGH);
     //digitalWrite(leftEyeLedPin, HIGH);
-    leds();
+    //leds();
     TurnHead();
   } else {
     digitalWrite(rightEyeLedPin, LOW);
@@ -217,12 +218,13 @@ void TurnHead() {
   digitalWrite(rightEyeLedPin, HIGH);
   digitalWrite(leftEyeLedPin, HIGH);
   headServo.write(180);
-  delay(5000);
+  leds();
+  delay(6666);
   //turn head back to 0 and turn of leds
   digitalWrite(rightEyeLedPin, LOW);
   digitalWrite(leftEyeLedPin, LOW);
   headServo.write(0);
-  delay(5000);
+  delay(13);
 }
 
 void beep() {
@@ -230,17 +232,10 @@ void beep() {
   // beeps 3 times , and turns the head to 0 position
   for (i = 0; i < 3; i++); // output a frequency sound
   {
-    digitalWrite(PinPiezzo, HIGH); //Turn off led
-    delay(600);
-    digitalWrite(PinPiezzo, LOW); //Turn on led
-    delay(300);
+    digitalWrite(PinPiezzo, HIGH); //Turn on piezzo
+    delay(666);
+    digitalWrite(PinPiezzo, LOW); //Turn off piezzo
+    delay(66);
   }
-  // turns the head to 0 position
-  headServo.write(0);
-}
-
-/*
-  void sonido(){
-
-  }
-*/
+ }
+ 
