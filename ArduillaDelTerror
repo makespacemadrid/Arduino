@@ -5,109 +5,99 @@
   // Scary "Pockets" Chipmunk!
 */
 /*
-  DIGITAL SENSORS
-
-
-// Circuito 
-// Pin D3 - Servo
+  CIRCUIT
 // 2 leds 
 // Pin D2 - Ojo derecho
+// Pin D3 - Servo
 // Pin D6 - Ojo izquierdo
 
-// Pin A0 - Light Sensor 
-  sound ?
+//  Ultrasonic HC-SR04
+//  Pin A0 - photocell 
 
-  Ultrasonic HC-SR04
+*/
+/* PSEUDO CODE
+at startup beeps 3 times, and turns head in default 0 position
 
-  ANALOG
+if senses a change in light (turn on the light) or detects item with ultrasonic , 
+the scary chipmunk lights up its eyes and turns its head
+will make a noise eventually
 
-  photocell
+// need to add a counter to avoid it working all the time 
+if it does it 3 times in a row, wait 30 seconds
+
+reset head 
 
 */
 
 
-
-
+//////DECLARE PINS , VARIABLES , CONSTANTS
 #include <Servo.h>
-
 Servo headServo;
 
+//ANALOG ACCESORIES
 int lightSensorPin = A0;
-
 int headServoPin = 3; 
 
-//led pins a confirmar
-int PinLedRoja = 2 ;//(idealmente en PWM para poder jugar con la intensidad)
-int PinLedNaranja = 6 ;//(idealmente en PWM para poder jugar con la intensidad)
+//DIGITAL ACCESORIES
 int rightEyeLedPin = 2;
 int leftEyeLedPin = 6;
-
 int LedRojaVal;
 int LedNaranjaVal;
 
 int PinPiezzo = 8 ;
-
 
 //ultrasonido a confirmar
 int PinTrigger = 4 ;
 int PinEcho = 5 ;
 
 //MILLIS
-unsigned long interval = 1000;            // the time we need to wait
+unsigned long interval = 10000;            // the time we need to wait
 unsigned long previousMillis = 0;         // millis() returns an unsigned long.
 
 
 void setup() {
   // put your setup code here, to run once:
   headServo.attach(3);
+  
   pinMode(rightEyeLedPin, OUTPUT);
   pinMode(leftEyeLedPin, OUTPUT);
-  pinMode(headServoPin, OUTPUT);
-  // initialize serial:
- 
-  
-  pinMode(PinLedRoja, OUTPUT);
-  pinMode(PinLedNaranja, OUTPUT);
-  pinMode(PinTrigger, OUTPUT);
-  pinMode(PinEcho, INPUT);
   LedRojaVal = 255;
   LedNaranjaVal = 255;
   update(); 
+  
+  pinMode(headServoPin, OUTPUT);  
+  pinMode(PinTrigger, OUTPUT);
+  pinMode(PinEcho, INPUT);
+
   Serial.begin(9600);
 }
-// pita 3 veces
+
+// beeps 3 times , and turns the head to 0 position
 void miFuncionDeArranque() {
   unsigned char i;
+  // beeps 3 times , and turns the head to 0 position
   for (i = 0; i < 3; i++); // output a frequency sound
   {
     digitalWrite(PinPiezzo, HIGH); //Turn off led
-    delay(200);
+    delay(600);
     digitalWrite(PinPiezzo, LOW); //Turn on led
-    delay(200);
-  }
+    delay(300);
+}
+  // turns the head to 0 position
+  headServo.write(0);
 }
 
 void loop() {
-
-leds();
-gira();
-
   //we use the millis to see when the last check occured, and when needed, perform another check
     unsigned long currentMillis = millis(); // grab current time
 if ((unsigned long)(currentMillis - previousMillis) >= interval) {
-  
-    //ultrasonic();
-  lightsensor();
-    // irdetection(); // commented because make it simple
-    
+      ultrasonic();
+	lightsensor();
   // save the "current" time
   previousMillis = millis();
 }
  delay(2); 
-  
-
 }
-
 
 
 void ultrasonic() {
@@ -178,8 +168,8 @@ void leds(){
 
 void update()
 {
-  analogWrite(PinLedRoja, LedRojaVal);
-  analogWrite(PinLedNaranja, LedNaranjaVal);
+  analogWrite(rightEyeLedPin, LedRojaVal);
+  analogWrite(leftEyeLedPin, LedNaranjaVal);
 }
 
 void color_morph(int* value, int get_brighter)
@@ -206,8 +196,9 @@ void lightsensor() {
   delay(50);
 
   if(lightValue > 350) {
-    digitalWrite(rightEyeLedPin, HIGH);
-    digitalWrite(leftEyeLedPin, HIGH);
+    //digitalWrite(rightEyeLedPin, HIGH);
+    //digitalWrite(leftEyeLedPin, HIGH);
+	leds();	
     headServo.write(180);
     delay(5000); 
   } else {
