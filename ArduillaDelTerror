@@ -39,7 +39,7 @@
 //ANALOG ACCESORIES
 int PhotoCellPin = A0;
 
-int headServoPin = 4; 
+int headServoPin = A4; 
 Servo headServo;
 int pos = 0;    // variable to store the servo position
 
