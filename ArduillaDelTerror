@@ -1,3 +1,4 @@
+
 /*
   codigo de la marmota de halloween
   aka scary chipmunk made in MAKESPACE Madrid
@@ -38,7 +39,7 @@
 //ANALOG ACCESORIES
 int PhotoCellPin = A0;
 
-int headServoPin = 3; 
+int headServoPin = 4; 
 Servo headServo;
 int pos = 0;    // variable to store the servo position
 
@@ -74,36 +75,44 @@ void setup() {
   //pinMode(headServoPin, OUTPUT);
   pinMode(PinTrigger, OUTPUT);
   pinMode(PinEcho, INPUT);
+  pinMode(PinPiezzo, OUTPUT);
+  pinMode(headServoPin, OUTPUT);
 
   Serial.begin(9600);
 }
 
 // beeps 3 times , and turns the head to 0 position
-void StartUpSignal() {
-  unsigned char i;
-  // beeps 3 times 
-  for (i = 0; i < 3; i++); // output a frequency sound
-  {
-    digitalWrite(PinPiezzo, HIGH); //Turn on piezzo
-    delay(666);
-    digitalWrite(PinPiezzo, LOW); //Turn off piezzo
-    delay(13);
-  }
-  // turns the head to 0 position 
-  //using function from the imported library
-  headServo.write(0);
-}
+// void StartUpSignal() {
+//   unsigned char i;
+//   // beeps 3 times 
+//   for (i = 0; i < 3; i++); // output a frequency sound
+//   {
+//     digitalWrite(PinPiezzo, HIGH); //Turn on piezzo
+//   // delay(666);
+//     digitalWrite(PinPiezzo, LOW); //Turn off piezzo
+//     delay(13);
+//   }
+//   // turns the head to 0 position 
+//   //using function from the imported library
+//   headServo.write(0);
+// }
 
 void loop() {
-  //we use the millis to see when the last check occured, and when needed, perform another check
-  unsigned long currentMillis = millis(); // grab current time
-  while ((unsigned long)(currentMillis - previousMillis) >= interval) {
-    //   ultrasonic();
-    PhotoCell();
-    // save the "current" time
-    previousMillis = millis();
-  }
-  delay(13);
+  
+ // beep();
+  //photoCell();
+ ServoBackForth();
+  // //we use the millis to see when the last check occured, and when needed, perform another check
+  // unsigned long currentMillis = millis(); // grab current time
+  // while ((unsigned long)(currentMillis - previousMillis) >= interval) {
+  //   //   ultrasonic();
+  //   beep();
+  //   TurnHead();
+  //   PhotoCell();
+  //   // save the "current" time
+  //   previousMillis = millis();
+  // }
+  // delay(13);
 }
 
 
@@ -194,19 +203,19 @@ void color_morph(int* value, int get_brighter)
 }
 
 
-void PhotoCell() {
+void photoCell() {
   // put your main code here, to run repeatedly:
   int lightValue = analogRead(PhotoCellPin);
 
   //for debug or if you want to test your currentMedida inicial del sensor de luz
-  //Serial.println(lightValue);
+  Serial.println(lightValue);
   //delay(50);
 
   if (lightValue > 350) {
     //digitalWrite(rightEyeLedPin, HIGH);
     //digitalWrite(leftEyeLedPin, HIGH);
     //leds();
-    TurnHead();
+    headServo.write(180);
   } else {
     digitalWrite(rightEyeLedPin, LOW);
     digitalWrite(leftEyeLedPin, LOW);
@@ -220,7 +229,7 @@ void TurnHead() {
   digitalWrite(rightEyeLedPin, HIGH);
   digitalWrite(leftEyeLedPin, HIGH);
   headServo.write(180);
-  leds();
+  //leds();
   delay(6666);
   //turn head back to 0 and turn of leds
   digitalWrite(rightEyeLedPin, LOW);
